@@ -518,6 +518,21 @@ def unixfile_rename(subpath):
             dir = dir["contents"][newNames[i]]
         return {"msg": "File Successfully Renamed"}
 
+@app.route('/unixfile/metaData/<path:subpath>', methods=['POST'])
+def unixfile_rename(subpath):
+    if request.method == 'POST':
+        newNames = request.get_json()['newName'].split('/')
+        paths = subpath.split('/')
+        directory = global_directory
+        for i in range(len(paths)-1):
+            directory = directory["contents"][paths[i]]
+        newDirectory  = directory['contents'].pop(paths[len(paths)-1])
+        dir = global_directory
+        for i in range(len(newNames)):
+            if i == len(newNames)-1:
+                dir['contents'][newNames[i]] = newDirectory
+            dir = dir["contents"][newNames[i]]
+        return {"msg": "File Successfully Renamed"}
 
 @app.route('/unixfile/copy/<path:subpath>', methods=['POST'])
 def unixfile_copy(subpath):
