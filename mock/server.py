@@ -522,17 +522,17 @@ def unixfile_rename(subpath):
 @app.route('/unixfile/copy/<path:subpath>', methods=['POST'])
 def unixfile_copy(subpath):
     if request.method == 'POST':
-        newNames = request.get_json()['newName'].split('/')
-        paths = subpath.split('/')
-        directory = global_directory
-        for i in range(len(paths)-1):
-            directory = directory["contents"][paths[i]]
-        newDirectory  = directory['contents'][paths[len(paths)-1]].copy()
-        dir = global_directory
-        for i in range(len(newNames)):
-            if i == len(newNames)-1:
-                dir['contents'][newNames[i]] = newDirectory
-            dir = dir["contents"][newNames[i]]
+        newNames = request.args.get('newName')
+        newNames = newNames.split("/")
+
+        directory = global_directory["contents"]
+        currPath = directory
+
+        for x in (newNames):
+            currPath[x] = {}
+            currPath = currPath[x]
+
+        currPath[newNames[len(newNames)-1]] = directory[subpath]
         return {"msg": "File Successfully Copied"}
 
 if __name__ == '__main__':
