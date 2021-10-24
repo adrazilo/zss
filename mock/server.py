@@ -528,9 +528,10 @@ def unixfile_copy(subpath):
         directory = global_directory["contents"]
         currPath = directory
 
-        for x in (newNames):
-            currPath[x] = {}
-            currPath = currPath[x]
+        for x in range(0, len(newNames)-1):
+            if(newNames[x] not in currPath):
+                currPath[newNames[x]] = {}
+            currPath = currPath[newNames[x]]
 
         currPath[newNames[len(newNames)-1]] = directory[subpath]
         return {"msg": "File Successfully Copied"}
