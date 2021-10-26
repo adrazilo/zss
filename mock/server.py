@@ -522,10 +522,13 @@ def unixfile_rename(subpath):
 @app.route('/unixfile/copy/<path:subpath>', methods=['POST'])
 def unixfile_copy(subpath):
     if request.method == 'POST':
-        newNames = request.args.get('newName')
-        newNames = newNames.split("/")
-
         directory = global_directory["contents"]
+
+        if(subpath not in directory):
+            return {"msg": subpath + " does not exist in directory"}
+        newName = request.args.get('newName')
+        newNames = newName.split("/")
+
         currPath = directory
 
         for x in range(0, len(newNames)-1):
@@ -533,8 +536,11 @@ def unixfile_copy(subpath):
                 currPath[newNames[x]] = {}
             currPath = currPath[newNames[x]]
 
-        currPath[newNames[len(newNames)-1]] = directory[subpath]
-        return {"msg": "File Successfully Copied"}
+        if(newNames[len(newNames)-1] not in currPath):
+            currPath[newNames[len(newNames)-1]] = directory[subpath]
+        else:
+            return{"msg": "Cannot copy " + newNames[len(newNames)-1] + " already exists in " + newName}
+        return {"msg": subpath + " successfully copied"}
 
 if __name__ == '__main__':
     app.run(debug=True)
