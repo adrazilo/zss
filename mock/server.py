@@ -524,8 +524,15 @@ def unixfile_copy(subpath):
     if request.method == 'POST':
         directory = global_directory["contents"]
 
+        overwrite = request.args.get('forceOverwrite')
+
+        if(overwrite is None or overwrite.lower() == "false"):
+            overwrite = False
+        else:
+            overwrite = True
+
         if(subpath not in directory):
-            return {"msg": subpath + " does not exist in directory"}
+            return {"msg": "File not found."}, 404
         newName = request.args.get('newName')
         newNames = newName.split("/")
 
@@ -536,11 +543,11 @@ def unixfile_copy(subpath):
                 currPath[newNames[x]] = {}
             currPath = currPath[newNames[x]]
 
-        if(newNames[len(newNames)-1] not in currPath):
+        if(newNames[len(newNames)-1] not in currPath or overwrite):
             currPath[newNames[len(newNames)-1]] = directory[subpath]
         else:
-            return{"msg": "Cannot copy " + newNames[len(newNames)-1] + " already exists in " + newName}
-        return {"msg": subpath + " successfully copied"}
+            return{"msg": "Directory already exists"}, 403
+        return {"msg": "Successfully copied a directory"}, 200
 
 if __name__ == '__main__':
     app.run(debug=True)
