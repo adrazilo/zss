@@ -518,22 +518,6 @@ def unixfile_rename(subpath):
             dir = dir["contents"][newNames[i]]
         return {"msg": "File Successfully Renamed"}
 
-@app.route('/unixfile/metaData/<path:subpath>', methods=['POST'])
-def unixfile_rename(subpath):
-    if request.method == 'POST':
-        newNames = request.get_json()['newName'].split('/')
-        paths = subpath.split('/')
-        directory = global_directory
-        for i in range(len(paths)-1):
-            directory = directory["contents"][paths[i]]
-        newDirectory  = directory['contents'].pop(paths[len(paths)-1])
-        dir = global_directory
-        for i in range(len(newNames)):
-            if i == len(newNames)-1:
-                dir['contents'][newNames[i]] = newDirectory
-            dir = dir["contents"][newNames[i]]
-        return {"msg": "File Successfully Renamed"}
-
 @app.route('/unixfile/copy/<path:subpath>', methods=['POST'])
 def unixfile_copy(subpath):
     if request.method == 'POST':
@@ -549,6 +533,50 @@ def unixfile_copy(subpath):
                 dir['contents'][newNames[i]] = newDirectory
             dir = dir["contents"][newNames[i]]
         return {"msg": "File Successfully Copied"}
+
+@app.route('/unixfile/metaData/<path:subpath>', methods=['GET'])
+def unixfile_metaData(subpath):
+    if request.method == 'GET':
+        directory = global_directory["contents"]
+
+        metaData = {
+            "path": subpath,
+            "directory": True,
+            "size": 0,
+            "ccsid": 0,
+            "createdAt": "",
+            "mode": 0
+        }
+
+        subpath = subpath.split("/")
+        currPath = directory
+
+        for x in range(0, len(subpath)-1):
+            currPath = currPath[subpath[x]]["contents"]
+
+        dest = subpath[len(subpath)-1]
+        currPath = currPath[dest]
+
+        if(currPath["type"] == "file"):
+            metaData["directory"] = False
+
+        metaData["mode"] = currPath["permissions"]
+
+        return {"msg": metaData}
+
+
+        # newNames = request.get_json()['newName'].split('/')
+        # paths = subpath.split('/')
+        # directory = global_directory
+        # for i in range(len(paths)-1):
+        #     directory = directory["contents"][paths[i]]
+        # newDirectory  = directory['contents'].pop(paths[len(paths)-1])
+        # dir = global_directory
+        # for i in range(len(newNames)):
+        #     if i == len(newNames)-1:
+        #         dir['contents'][newNames[i]] = newDirectory
+        #     dir = dir["contents"][newNames[i]]
+        # return {"msg": "File Successfully Renamed"}
 
 if __name__ == '__main__':
     app.run(debug=True)
