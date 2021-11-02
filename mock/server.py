@@ -549,6 +549,38 @@ def unixfile_copy(subpath):
             return{"msg": "Directory already exists"}, 403
         return {"msg": "Successfully copied a directory"}, 200
 
+
+@app.route('/unixfile/chmod/<path:dir>', methods=['POST'])
+def unixfile_chmod(dir):
+    if request.method == 'POST':
+        directory = global_directory["contents"]
+
+        dirPaths = dir.split("/")
+
+        mode = request.args.get('mode')
+
+        try:
+            int(mode, 8)
+            if(mode[:2] == "0o"):
+                mode = int(mode, 8)
+            else:
+                mode = int(mode)
+        except:
+            return {"msg": "Failed to change mode, mode not octal"}, 400
+
+        currPath = directory
+
+        for x in range(0, len(dirPaths) - 1):
+            print(currPath)
+            currPath = currPath[dirPaths[x]]["contents"]
+
+        currPath[dirPaths[len(dirPaths)-1]]["permissions"] = mode
+
+        if(currPath[dirPaths[len(dirPaths)-1]]["permissions"] == mode):
+            return {"msg": "successfully Modified Modes"}, 200
+
+        return {"msg": "failed to modify file modes"}, 500
+
 if __name__ == '__main__':
     app.run(debug=True)
 
