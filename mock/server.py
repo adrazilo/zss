@@ -558,6 +558,8 @@ def unixfile_chmod(dir):
         dirPaths = dir.split("/")
 
         mode = request.args.get('mode')
+        recursive = request.args.get('recursive')
+        pattern = request.args.get('pattern')
 
         try:
             int(mode, 8)
