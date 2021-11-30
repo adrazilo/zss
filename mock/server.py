@@ -103,15 +103,20 @@ def genVolserId():
 global_directory = {
     "permissions": 777,
     "type": "folder",
-    "createdAt": "2021-06-02T12:35:07",
+    "createdAt": "1999-06-02T12:35:07",
+    "ccsid": 37,
     "contents": {
         "folder1": {
             "permissions": 777,
             "type": "folder",
+            "createdAt": "1998-08-02T17:49:22",
+            "ccsid": 37,
             "contents": {
                 "file1": {
                     "permissions": 777,
                     "type": "file",
+                    "createdAt": "2021-06-02T12:35:07",
+                    "ccsid": 37,
                     "contents": {
                         "raw": "This is file1",
                         "b64": "VGhpcyBpcyBmaWxlMQ=="
@@ -120,10 +125,14 @@ global_directory = {
                 "folderA": {
                     "permissions": 777,
                     "type": "folder",
+                    "createdAt": "2021-10-03T09:55:24",
+                    "ccsid": 37,
                     "contents": {
                         "fileA": {
                             "permissions": 777,
                             "type": "file",
+                            "createdAt": "2021-10-03T09:55:24",
+                            "ccsid": 37,
                             "contents": {
                                 "raw": "This is fileA",
                                 "b64": "VGhpcyBpcyBmaWxlQQ=="
@@ -136,11 +145,15 @@ global_directory = {
         "folder2": {
             "permissions": 777,
             "type": "folder",
+            "createdAt": "2021-10-03T09:55:24",
+            "ccsid": 37,
             "contents": {}
         },
         "file1": {
             "permissions": 777,
             "type": "file",
+            "createdAt": "2021-10-03T09:55:24",
+            "ccsid": 37,
             "contents": {
                 "raw": "This is file1",
                 "b64": "VGhpcyBpcyBmaWxlMQ=="
@@ -149,6 +162,8 @@ global_directory = {
         "file2": {
             "permissions": 777,
             "type": "file",
+            "createdAt": "2021-10-03T09:55:24",
+            "ccsid": 37,
             "contents": {
                 "raw": "Goodbye",
                 "b64": "VGhpcyBpcyBmaWxlMg=="
@@ -157,6 +172,8 @@ global_directory = {
         "noPermissions": {
             "permissions": 0,
             "type": "file",
+            "createdAt": "2021-10-03T09:55:24",
+            "ccsid": 37,
             "contents": {
                 "raw": "You should not be able to read this",
                 "b64": "WW91IHNob3VsZCBub3QgYmUgYWJsZSB0byByZWFkIHRoaXM="
@@ -562,6 +579,9 @@ def unixfile_metaData(subpath):
             metaData["directory"] = False
 
         metaData["mode"] = currPath["permissions"]
+        metaData["createdAt"] = currPath["createdAt"]
+        metaData["ccsid"] = currPath["ccsid"]
+        metaData["size"] = (currPath)
 
         return {"msg": metaData}
 
