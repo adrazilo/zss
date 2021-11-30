@@ -103,6 +103,7 @@ def genVolserId():
 global_directory = {
     "permissions": 777,
     "type": "folder",
+    "createdAt": "2021-06-02T12:35:07",
     "contents": {
         "folder1": {
             "permissions": 777,
