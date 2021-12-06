@@ -575,8 +575,11 @@ def unixfile_metaData(subpath):
         dest = subpath[len(subpath)-1]
         currPath = currPath[dest]
 
+        metaData["size"] = len(currPath)
+
         if(currPath["type"] == "file"):
             metaData["directory"] = False
+            metaData["size"] = len(currPath["contents"])
 
         metaData["mode"] = currPath["permissions"]
         metaData["createdAt"] = currPath["createdAt"]
