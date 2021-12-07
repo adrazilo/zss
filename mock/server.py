@@ -545,6 +545,7 @@ def unixfile_copy(subpath):
 
         if(newNames[len(newNames)-1] not in currPath or overwrite):
             currPath[newNames[len(newNames)-1]] = directory[subpath]
+
         else:
             return{"msg": "Directory already exists"}, 403
         return {"msg": "Successfully copied a directory"}, 200
@@ -577,6 +578,8 @@ def unixfile_chmod(dir):
             currPath = currPath[dirPaths[x]]["contents"]
 
         currPath[dirPaths[len(dirPaths)-1]]["permissions"] = mode
+
+        
 
         if(currPath[dirPaths[len(dirPaths)-1]]["permissions"] == mode):
             return {"msg": "successfully Modified Modes"}, 200
