@@ -518,73 +518,45 @@ def unixfile_rename(subpath):
             dir = dir["contents"][newNames[i]]
         return {"msg": "File Successfully Renamed"}
 
-
-@app.route('/unixfile/copy/<path:subpath>', methods=['POST'])
-def unixfile_copy(subpath):
-    if request.method == 'POST':
-        directory = global_directory["contents"]
-
-        overwrite = request.args.get('forceOverwrite')
-
-        if(overwrite is None or overwrite.lower() == "false"):
-            overwrite = False
-        else:
-            overwrite = True
-
-        if(subpath not in directory):
-            return {"msg": "File not found."}, 404
-        newName = request.args.get('newName')
-        newNames = newName.split("/")
-
-        currPath = directory
-
-        for x in range(0, len(newNames)-1):
-            if(newNames[x] not in currPath):
-                currPath[newNames[x]] = {}
-            currPath = currPath[newNames[x]]
-
-        if(newNames[len(newNames)-1] not in currPath or overwrite):
-            currPath[newNames[len(newNames)-1]] = directory[subpath]
-
-        else:
-            return{"msg": "Directory already exists"}, 403
-        return {"msg": "Successfully copied a directory"}, 200
-
-
 @app.route('/unixfile/chmod/<path:dir>', methods=['POST'])
 def unixfile_chmod(dir):
     if request.method == 'POST':
-        directory = global_directory["contents"]
-
-        dirPaths = dir.split("/")
-
-        mode = request.args.get('mode')
-        recursive = request.args.get('recursive')
-        pattern = request.args.get('pattern')
-
         try:
-            int(mode, 8)
-            if(mode[:2] == "0o"):
-                mode = int(mode, 8)
-            else:
-                mode = int(mode)
+            directory = global_directory["contents"]
+            dirPaths = dir.split("/")
+            mode = request.args.get('mode')
+            recursive = False
+            pattern = request.args.get('pattern')
+            if(request.args.get('recursive') is not None):
+                recursive = request.args.get('recursive').lower() == "true"
+            if(pattern == ""):
+                pattern = None
+            try:
+                int(mode, 8)
+                if(mode[:2] == "0o"):
+                    mode = int(mode, 8)
+                else:
+                    mode = int(mode)
+            except:
+                return {"msg": "Failed to change mode, mode not octal"}, 400
+            currPath = directory
+            for x in range(0, len(dirPaths) - 1):
+                if(dirPaths[x] not in currPath):
+                    return {"msg": "Directory/File not found."}, 404
+                currPath = currPath[dirPaths[x]]["contents"]
+            if (dirPaths[len(dirPaths) - 1] not in currPath):
+                return {"msg": "Directory/File not found."}, 404
+            if(pattern is None or pattern in dirPaths[len(dirPaths)-1]):
+                currPath[dirPaths[len(dirPaths) - 1]]["permissions"] = mode
+            if(currPath[dirPaths[len(dirPaths)-1]]["type"] == "folder" and len(currPath[dirPaths[len(dirPaths)-1]]["contents"]) > 0 and recursive):
+                for child, value in currPath[dirPaths[len(dirPaths)-1]]["contents"].items():
+                    if (value["type"] == "folder"):
+                        print(unixfile_chmod(dir + "/" + child))
+                    if (pattern is None or pattern in child):
+                        value["permissions"] = mode
+            return {"msg": "Successfully Modified Modes"}, 200
         except:
-            return {"msg": "Failed to change mode, mode not octal"}, 400
-
-        currPath = directory
-
-        for x in range(0, len(dirPaths) - 1):
-            print(currPath)
-            currPath = currPath[dirPaths[x]]["contents"]
-
-        currPath[dirPaths[len(dirPaths)-1]]["permissions"] = mode
-
-        
-
-        if(currPath[dirPaths[len(dirPaths)-1]]["permissions"] == mode):
-            return {"msg": "successfully Modified Modes"}, 200
-
-        return {"msg": "failed to modify file modes"}, 500
+            return {"msg": "Failed to modify file modes"}, 500
 
 if __name__ == '__main__':
     app.run(debug=True)
